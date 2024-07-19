@@ -3,44 +3,79 @@ class BlackJackGame:
         self.players = players
         self.dealer = dealer
         self.deck = deck
-        pass
 
     def play_round(self):
-        #Deal the initial cards out(for simplicity, everyone makes a bet of 1)
+        # Deal the initial cards out (for simplicity, everyone makes a bet of 1)
         for player in self.players:
-            player.hand[0] = self.deck.deal()
+            player.hand = [self.deck.deal(), self.deck.deal()]
+            player.bet = 1
 
-        #Deal the down card for dealer
-        self.dealer.hand[1] = self.deck.deal()
+        # Deal cards for dealer
+        self.dealer.hand = [self.deck.deal(), self.deck.deal()]
 
-        #Last Card for each player
+        # Player's Turn
         for player in self.players:
-            player.hand[1] = self.deck.deal()
+            self.player_turn(player)
 
-        #Deal the up card for dealer
-        self.dealer.hand[0] = self.deck.deal()
+        # Dealer's Turn
+        while self.dealer.decision() == "Hit":
+            self.dealer.hand.append(self.deck.deal())
 
-        #Player's Turn
-        for player in self.player:
+        # Update all the scores
+        self.settle_Results()
+
+    def player_turn(self, player):
+        hands = [player.hand]
+        bets = [player.bet]
+        
+        for i, hand in enumerate(hands):
             while True:
-                decision = player.makeDecision(self.dealer.getUpCard(), self.deck)
-                if decision == 'Split':
-                    #Implement after I commit to main
+                decision = player.makeDecision(self.dealer.getUpCard(), self.deck, hand)
+                if decision == 'Split' and len(hand) == 2 and hand[0] == hand[1]:
+                    new_hand = [hand.pop()]
+                    new_hand.append(self.deck.deal())
+                    hand.append(self.deck.deal())
+                    hands.append(new_hand)
+                    bets.append(bets[i])
+                elif decision == 'Double Down' and len(hand) == 2:
+                    bets[i] *= 2
+                    hand.append(self.deck.deal())
                     break
                 elif decision == 'Hit':
-                    player.hand.append(self.deck.deal())
-                    if sum(player.hand) > 21:
+                    while decision == 'Hit' and sum(hand) <= 21:
+                        hand.append(self.deck.deal())
+                        decision = player.makeDecision(self.dealer.getUpCard(), self.deck, hand)
                         break
                 elif decision == "Stand":
                     break
         
-        #Dealer's Turn
-        while self.dealer.decision() == "Hit":
-            self.dealer.hand.append(self.deck.deal())
+        player.hands = hands
+        player.bets = bets
 
-        #Update all the scores
-        self. settle_Results()
-
-    #Helps update scores
     def settle_Results(self):
-        pass
+        dealer_total = self.dealer.getTotal()
+        for player in self.players:
+            player.result = []
+            player.bankroll_change = 0
+            for i, hand in enumerate(player.hands):
+                player_total = Player.calculate_total(hand)
+                if player_total > 21:
+                    result = "Loss"
+                elif dealer_total > 21:
+                    result = "Win"
+                elif dealer_total > player_total:
+                    result = "Loss"
+                elif dealer_total < player_total:
+                    result = "Win"
+                else:
+                    result = "Push"
+                
+                player.result.append(result)
+                
+                # Update bankroll
+                if result == "Win":
+                    player.bankroll_change += player.bets[i]
+                elif result == "Loss":
+                    player.bankroll_change -= player.bets[i]
+            
+            player.bankroll += player.bankroll_change
