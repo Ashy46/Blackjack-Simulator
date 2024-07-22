@@ -11,19 +11,7 @@ class Player:
 
     def makeDecision(self, dealer_card, deck, hand):
         # Basic strategy (simplified)
-        player_total = self.calculate_total(hand)
-        
-        if len(hand) == 2 and hand[0] == hand[1]:
-            if hand[0] in ['8', 'A']:
-                return "Split"
-        
-        if len(hand) == 2 and player_total in [10, 11] and self.calculate_total([dealer_card]) < 10:
-            return "Double Down"
-        
-        if player_total < 17:
-            return "Hit"
-        else:
-            return "Stand"
+        return self.solver.decide(self.hand, dealer_card, deck)
 
     @staticmethod
     def calculate_total(hand):
