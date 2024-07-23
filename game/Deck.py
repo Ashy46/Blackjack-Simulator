@@ -26,8 +26,8 @@ class Deck:
 
     def size(self) -> int:
         total = 0
-        for i in self.deckTable:
-            total += i
+        for count in self.deck.values():
+            total += count
         return total
     
     def deal(self):
