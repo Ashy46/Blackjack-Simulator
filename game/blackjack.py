@@ -1,3 +1,7 @@
+from game.player import Player
+from game.dealer import Dealer
+from game.Deck import Deck
+
 class BlackJackGame:
     def __init__(self, players, dealer, deck) -> None:
         self.players = players
