@@ -46,3 +46,7 @@ class Deck:
     def getProbability(self, card):
         probability  = (self.deck[card])/(self.size())
         return probability
+    
+    def reset(self):
+        self.__init__(self.shoes)
+    

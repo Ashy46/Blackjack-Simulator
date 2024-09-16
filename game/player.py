@@ -4,7 +4,7 @@ class Player:
         self.solver = solver
         self.hand = []
         self.hands = []
-        self.bankroll = 1000
+        self.bankroll = 10000
         self.result = []
         self.bet = 1
         self.bets = []

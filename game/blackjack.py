@@ -9,6 +9,9 @@ class BlackJackGame:
         self.deck = deck
 
     def play_round(self):
+        # If we run out of cards, refresh shoe
+        if self.deck.size() < (0.35*self.deck.shoes*52):
+            self.deck.reset()
         # Deal the initial cards out (for simplicity, everyone makes a bet of 1)
         for player in self.players:
             player.hand = [self.deck.deal(), self.deck.deal()]
@@ -41,15 +44,15 @@ class BlackJackGame:
                     hand.append(self.deck.deal())
                     hands.append(new_hand)
                     bets.append(bets[i])
-                elif decision == 'Double Down' and len(hand) == 2:
+                elif decision == 'Double' and len(hand) == 2:
                     bets[i] *= 2
                     hand.append(self.deck.deal())
                     break
-                elif decision == 'Hit':
-                    while decision == 'Hit' and sum(hand) <= 21:
+                elif decision == 'Hit' or decision == 'Double' and len(hand) > 2:
+                    while decision == 'Hit' and Player.calculate_total(hand) <= 21 or decision == 'Double' and Player.calculate_total(hand) <= 21:
                         hand.append(self.deck.deal())
                         decision = player.makeDecision(self.dealer.getUpCard(), self.deck, hand)
-                        break
+                    break
                 elif decision == "Stand":
                     break
         
@@ -74,7 +77,6 @@ class BlackJackGame:
                 else:
                     result = "Push"
                 
-                player.result.append(result)
                 
                 # Update bankroll
                 if result == "Win":
@@ -82,4 +84,6 @@ class BlackJackGame:
                 elif result == "Loss":
                     player.bankroll_change -= player.bets[i]
             
+            player.bets = []
+            player.hands = []
             player.bankroll += player.bankroll_change
