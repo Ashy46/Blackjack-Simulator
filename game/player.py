@@ -11,7 +11,7 @@ class Player:
 
     def makeDecision(self, dealer_card, deck, hand):
         # Basic strategy (simplified)
-        return self.solver.decide(self.hand, dealer_card, deck)
+        return self.solver.decide(tuple(self.hand), dealer_card, deck)
 
     @staticmethod
     def calculate_total(hand):

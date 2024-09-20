@@ -8,15 +8,17 @@ from solvers.emanSolver import EmanSolver
 from solvers.bayesianSolver import BayesianSolver
 
 def main():
-    players = [Player("Player 1", EmanSolver()), Player("Player 2", BayesianSolver())]
+    players = [Player("Player 2", BayesianSolver())]
     dealer = Dealer()
-    deck = Deck(8)
+    deck = Deck(6)
     game = BlackJackGame(players, dealer, deck)
-    for i in range(100):
+    for i in range(1):
         game.play_round()
+        players[0].solver.clear_cache()
     
     for player in players:
         profit = str(player.bankroll)
         print(player.name + ": " + profit)
-    
-main()  # Output: ['Win'], ['Loss'], 1, -1 or something similar
+    return (players[0].bankroll - 10000)
+result = main()  # Output: ['Win'], ['Loss'], 1, -1 or something similar
+print(result)
