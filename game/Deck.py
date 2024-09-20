@@ -49,4 +49,12 @@ class Deck:
     
     def reset(self):
         self.__init__(self.shoes)
+
+    def cards(self):
+        return self.deck.keys()
+    
+    def copy(self):
+        new_deck = Deck(self.shoes)
+        new_deck.deck = self.deck.copy()
+        return new_deck
     

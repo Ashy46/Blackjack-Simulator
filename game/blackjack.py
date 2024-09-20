@@ -14,12 +14,16 @@ class BlackJackGame:
             self.deck.reset()
         # Deal the initial cards out (for simplicity, everyone makes a bet of 1)
         for player in self.players:
-            player.hand = [self.deck.deal(), self.deck.deal()]
+            player.hand = [self.deck.deal()]
             player.bet = 1
 
-        # Deal cards for dealer
-        self.dealer.hand = [self.deck.deal(), self.deck.deal()]
+        self.dealer.hand = [self.deck.deal()]
 
+        # Deal the second card
+        for player in self.players:
+            player.hand.append(self.deck.deal())
+
+        self.dealer.hand.append(self.deck.deal())
         # Player's Turn
         for player in self.players:
             self.player_turn(player)

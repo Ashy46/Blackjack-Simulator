@@ -2,6 +2,7 @@ import time
 from solvers import base_solver
 from game.player import Player
 
+#The EmanSovler, or the basic intuition solver, is just the basic solver that uses human intuition to make decisions.
 class EmanSolver(base_solver.BaseSolver):
     def __init__(self):
         self.hard_totals = {
@@ -45,7 +46,6 @@ class EmanSolver(base_solver.BaseSolver):
 
     def decide(self, player_hand, dealer_up_card, deck):
         hand_total = Player.calculate_total(player_hand)
-
         if hand_total >= 21:
             return 'Stand'
         if dealer_up_card == 'A':
