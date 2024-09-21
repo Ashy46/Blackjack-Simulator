@@ -25,4 +25,5 @@ BayesianSolver is the solver that uses probability of getting certain hands and 
 ## Results
 Here are the results from one run playing 100,000 hands.  
 ![Screenshot of the results](results.png)
+
 Player 1 is eman solver and Player 2 is the bayesian solver. Clearly, both of these are losing to the dealer in the long run, player 1 averaging about -0.04 bets per round and player 2 about -0.03 bets per round. To improve these, I want to add a way to count cards and change bet sizing based on the situation of the game, more 10s(10,j,q,k,A) means larger bet. 
