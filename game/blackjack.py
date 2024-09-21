@@ -26,6 +26,7 @@ class BlackJackGame:
         self.dealer.hand.append(self.deck.deal())
         # Player's Turn
         for player in self.players:
+            print(player.hand)
             self.player_turn(player)
 
         # Dealer's Turn

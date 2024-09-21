@@ -56,9 +56,6 @@ class EmanSolver(base_solver.BaseSolver):
             dealer_up_card = '11'
         if dealer_up_card in ['J', 'Q', 'K']:
             dealer_up_card = '10'
-        dealer_up_card = str(dealer_up_card)
-        print(dealer_up_card)
-        print(player_hand)
         # Check for pairs
         if len(player_hand) == 2 and player_hand[0] == player_hand[1]:
             action = self.pairs.get(f'{player_hand[0]},{player_hand[0]}', {}).get(dealer_up_card, 'Stand')

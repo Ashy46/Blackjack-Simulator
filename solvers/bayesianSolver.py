@@ -1,3 +1,4 @@
+import random
 from game.Deck import Deck
 from game.player import Player
 from solvers.base_solver import BaseSolver
@@ -29,7 +30,6 @@ class BayesianSolver(BaseSolver):
         decision = None
         if return_ev:
             return best_ev
-        print(player_hand, dealer_up_card, best_ev)
         if best_ev == ev_stand:
             decision = 'Stand'
         elif best_ev == ev_double:
@@ -128,11 +128,28 @@ class BayesianSolver(BaseSolver):
         return ev
 
     @lru_cache(maxsize=None)
-    def calculate_ev_split(self, player_hand, dealer_up_card, deck):
-
+    def calculate_ev_split(self, player_hand, dealer_up_card, deck, aces=False):
         if player_hand[0] != player_hand[1] or len(player_hand) != 2:
             return float('-inf')
-        
+
+        if player_hand[0] == 'A' and not aces:
+            return self.calculate_ev_split_aces(player_hand, dealer_up_card, deck)
+
+        pairs_chart = {
+            '2,2': {'5': 'inf', '6': 'inf', '7': 'inf'} | {str(i): '-inf' for i in [2, 3, 4, 8, 9, 10, 11]},
+            '3,3': {'4': 'inf', '5': 'inf', '6': 'inf', '7': 'inf'} | {str(i): '-inf' for i in [2, 3, 8, 9, 10, 11]},
+            '4,4': {str(i): '-inf' for i in range(2, 12)},
+            '5,5': {str(i): '-inf' for i in range(2, 10)} | {'10': '-inf', '11': '-inf'},
+            '6,6': {str(i): 'inf' for i in range(2, 7)} | {str(i): '-inf' for i in range(7, 12)},
+            '7,7': {str(i): 'inf' for i in range(2, 9)} | {str(i): '-inf' for i in range(9, 12)},
+            '8,8': {str(i): 'inf' for i in range(2, 12)},
+            '9,9': {str(i): '-inf' for i in range(2, 12)},
+            '10,10': {str(i): '-inf' for i in range(2, 12)},
+        }
+
+        return float(pairs_chart.get(f'{player_hand[0]},{player_hand[0]}', {}).get(str(dealer_up_card), '-inf'))
+
+    def calculate_ev_split_aces(self, player_hand, dealer_up_card, deck):
         ev = 0
         for card1 in deck.cards():
             if deck.deck[card1] <= 0:
@@ -140,17 +157,16 @@ class BayesianSolver(BaseSolver):
             for card2 in deck.cards():
                 if deck.deck[card2] <= 0:
                     continue
-                hand1 = (player_hand[0], card1)
-                hand2 = (player_hand[1], card2)
+                new_hands = [(player_hand[0], card1), (player_hand[1], card2)]
                 new_deck = deck.copy()
                 new_deck.deck[card1] -= 1
                 new_deck.deck[card2] -= 1
                 prob = deck.getProbability(card1) * deck.getProbability(card2)
-                ev += (self.decide(hand1, dealer_up_card, new_deck, return_ev=True) +
-                       self.decide(hand2, dealer_up_card, new_deck, return_ev=True)) * prob
-        
+                
+                ev += (prob) * sum(self.calculate_ev_stand(hand, dealer_up_card, new_deck) for hand in new_hands)
+
         return ev
-    
+
     def clear_cache(self):
         self.memoized_dealer.clear()
         self.memoized_decisions.clear()
