@@ -42,6 +42,10 @@ class EmanSolver(base_solver.BaseSolver):
             '3,3': {'4': 'Split', '5': 'Split', '6': 'Split', '7': 'Split'} | {str(i): 'Hit' for i in [2, 3, 8, 9, 10, 11]},
             '4,4': {str(i): 'Hit' for i in range(2, 12)},
             '5,5': {str(i): 'Double' for i in range(2, 10)} | {'10': 'Hit', '11': 'Hit'},
+            '6,6': {str(i): 'Split' for i in range(2, 7)} | {str(i): 'Hit' for i in range(7, 12)},
+            '7,7': {str(i): 'Split' for i in range(2, 9)} | {str(i): 'Hit' for i in range(9, 12)},
+            '8,8': {str(i): 'Split' for i in range(2, 12)},
+            '9,9': {str(i): 'Stand' for i in range(2, 12)},
         }
 
     def decide(self, player_hand, dealer_up_card, deck):
