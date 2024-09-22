@@ -15,7 +15,7 @@ class BlackJackGame:
         # Deal the initial cards out (for simplicity, everyone makes a bet of 1)
         for player in self.players:
             player.hand = [self.deck.deal()]
-            player.bet = 1
+            player.bet = player.betSizing(self.deck)
 
         self.dealer.hand = [self.deck.deal()]
 

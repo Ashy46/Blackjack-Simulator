@@ -1,3 +1,6 @@
+from math import prod
+from game.Deck import Deck
+
 class Player:
     def __init__(self, name, solver):
         self.name = name
@@ -31,3 +34,12 @@ class Player:
             else:
                 total += 1
         return total
+    
+    def betSizing(self, deck):
+        prob = 0
+        for card in ["10", "J", "Q", "K", "A"]:
+            prob += deck.getProbability(card)
+
+        if prob > 0.45:
+            return 3
+        return 1
