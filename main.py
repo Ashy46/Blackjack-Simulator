@@ -20,7 +20,7 @@ def main():
     ]
 
     # train_q_learning.py
-    EPISODES = 2_000_000  # Blackjack needs extensive training[7][14]
+    EPISODES = 2_000_000  # Blackjack needs extensive training
     DECAY_EVERY = 100_000
 
     for episode in range(EPISODES):
