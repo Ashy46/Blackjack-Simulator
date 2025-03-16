@@ -4,10 +4,10 @@ from game.blackjack import BlackJackGame
 from game.player import Player
 from game.dealer import Dealer
 from game.deck import Deck
-from base_solver import BaseSolver
+from solvers.base_solver import BaseSolver
 
 class QLearningSolver(BaseSolver):
-    def __init__(self, alpha=0.01, gamma=0.9, epsilon=0.1):
+    def __init__(self, alpha=0.05, gamma=0.9, epsilon=0.3):
         super(QLearningSolver, self).__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -15,6 +15,7 @@ class QLearningSolver(BaseSolver):
         self.q_table = {}
         self.state = None
         self.action = None
+        self.episode_actions = []
 
     def _card_value(self, card_str: str) -> int:
         """
@@ -32,26 +33,17 @@ class QLearningSolver(BaseSolver):
             return 11  # Will be handled specially in state tracking
         return int(card_str)
     
-    def get_state(self, player_hand: list[int], dealer_up_card: str) -> tuple:
-        """
-        Convert game components to Q-learning state tuple
-
-        Args:
-            player_hand: list of player's hand
-            dealer_up_card: dealer's up card
-        
-        Returns:
-            state: tuple representing the state
-        """
+    def get_state(self, player_hand, dealer_up_card):
         player_total = Player.calculate_total(player_hand)
         dealer_value = self._card_value(dealer_up_card)
-        
-        # Track usable ace (ace counted as 11 without busting)
+    
+        # Proper usable ace calculation
         usable_ace = False
-        temp_total = sum([self._card_value(c) for c in player_hand])
-        if 'A' in player_hand and temp_total <= 21:
-            usable_ace = True
-            
+        if 'A' in player_hand:
+            # Calculate hard total (aces as 1)
+            hard_total = sum(10 if c in ['J','Q','K'] else 11 if c == 'A' else int(c) for c in player_hand)
+            usable_ace = (hard_total != player_total)
+        
         return (player_total, dealer_value, usable_ace)
     
     def decide(self, player_hand, dealer_up_card, deck):
@@ -68,36 +60,20 @@ class QLearningSolver(BaseSolver):
             action = np.argmax(self.q_table[state])
             
         self.last_action = action
+        self.episode_actions.append((state, action))
         return 'Hit' if action == 0 else 'Stand'
     
     def update(self, reward, new_player_hand, dealer_up_card):
-        """
-        Update Q-table after action
-        
-        Args:
-            reward: reward for the action
-            new_player_hand: new player hand after action
-            dealer_up_card: dealer
+        """Backpropagate final reward to all actions"""
+        for state, action in self.episode_actions:
+            old_q = self.q_table.get(state, [0,0])[action]
+            self.q_table.setdefault(state, [0,0])[action] = old_q + self.alpha * (reward - old_q)
+        self.episode_actions = []
 
-        Returns:
-            None
-        """
-        if self.last_state is None:
-            return
-            
-        new_state = self.get_state(new_player_hand, dealer_up_card)
-        
-        current_q = self.q_table[self.last_state][self.last_action]
-        next_max = np.max(self.q_table.get(new_state, [0, 0]))
-        
-        # Q-learning update rule
-        updated_q = current_q + self.alpha * (
-            reward + self.gamma * next_max - current_q
-        )
-        
-        self.q_table[self.last_state][self.last_action] = updated_q
-        self.last_state = None  
-
+    def print_key_decision(self):
+        print("Key State -> Action Mapping:")
+        print("(16, 7, True):", "Hit" if np.argmax(self.q_table.get((16,7,True), [0,0])) == 0 else "Stand")
+        print("(18, 6, False):", "Hit" if np.argmax(self.q_table.get((18,6,False), [0,0])) == 0 else "Stand")
 
 
 

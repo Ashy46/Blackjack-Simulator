@@ -67,6 +67,10 @@ class BlackJackGame:
     def settle_Results(self):
         dealer_total = self.dealer.getTotal()
         for player in self.players:
+            if hasattr(player.solver, 'update'):
+            # Use absolute reward scaling
+                scaled_reward = player.bankroll_change / max(player.bet, 1)
+                player.solver.update(scaled_reward, [], self.dealer.getUpCard())
             player.result = []
             player.bankroll_change = 0
             for i, hand in enumerate(player.hands):
@@ -88,6 +92,8 @@ class BlackJackGame:
                     player.bankroll_change += player.bets[i]
                 elif result == "Loss":
                     player.bankroll_change -= player.bets[i]
+                
+            print(f"Player {player.name} reward: {player.bankroll_change}")
             
             player.bets = []
             player.hands = []

@@ -1,5 +1,5 @@
 import random
-from game.Deck import Deck
+from game.deck import Deck
 from game.player import Player
 from solvers.base_solver import BaseSolver
 from functools import lru_cache

@@ -1,0 +1,6 @@
+.vscode/
+q_table.pkl
+solvers/__pycache__/
+games/__pycache__/
+**/__pycache__/
+*.pyc
