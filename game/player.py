@@ -8,6 +8,7 @@ class Player:
         self.result = []
         self.bet = 1
         self.bets = []
+        self.bankroll_change = 0
 
     def makeDecision(self, dealer_card, deck, hand):
         # Basic strategy (simplified)
@@ -31,3 +32,10 @@ class Player:
             else:
                 total += 1
         return total
+    
+    def end_round(self):
+        """
+        Signal end of round to solve
+        """
+        if hasattr(self.solver, 'update'):
+            self.solver.update(self.bankroll_change, [], self.hand[0] if self.hand else '2')
