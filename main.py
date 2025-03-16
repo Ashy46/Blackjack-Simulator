@@ -15,12 +15,12 @@ def main():
     
     # Create players with different solvers
     players = [
-        Player("QLearner", QLearningSolver(alpha=0.1, gamma=0.95, epsilon=0.2)),
+        Player("QLearner", QLearningSolver(alpha=0.1, gamma=0.95, epsilon=0.1)),
         Player("Basic", EmanSolver()),
     ]
 
     # train_q_learning.py
-    EPISODES = 1_000_000  # Blackjack needs extensive training[7][14]
+    EPISODES = 2_000_000  # Blackjack needs extensive training[7][14]
     DECAY_EVERY = 100_000
 
     for episode in range(EPISODES):
