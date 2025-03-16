@@ -96,7 +96,7 @@ class QLearningSolver(BaseSolver):
         )
         
         self.q_table[self.last_state][self.last_action] = updated_q
-        self.last_state = None  # Reset for next decision
+        self.last_state = None  
 
 
 
